@@ -1,0 +1,84 @@
+pipeline {
+    agent {
+        docker {
+            // Use your custom Docker image with AWS CLI v2 and Terraform installed
+            image 'your-custom-docker-image:latest'
+            args '-u root' // Run as root if required by your Docker image
+        }
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1' // Set your desired AWS region
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Check out the source code from the repository
+                    git branch: 'main', credentialsId: 'your-git-credentials', url: 'https://github.com/your/repo.git'
+                }
+            }
+        }
+
+        stage('Authenticate with AWS SSO and Initialize') {
+            steps {
+                script {
+                    // Authenticate with AWS SSO and retrieve session token
+                    def awsSsoLogin = sh(script: 'aws sso login --profile YOUR_SSO_PROFILE_NAME', returnStatus: true)
+                    
+                    if (awsSsoLogin == 0) {
+                        // Successfully retrieved the SSO session token
+                        // Use the SSO token to run AWS CLI commands
+                        sh 'aws s3 ls' // Example AWS CLI command
+                        sh 'terraform init' // Initialize Terraform using the SSO token
+                    } else {
+                        error 'Failed to authenticate with AWS SSO'
+                    }
+                }
+            }
+        }
+
+        // Add more stages as needed
+        stage('Terraform Linting') {
+            steps {
+                script {
+                    // Run Terraform linting using tflint
+                    sh 'tflint'
+                }
+            }
+        }
+
+        stage('Terraform Validate and Plan') {
+            steps {
+                script {
+                    // Validate Terraform configurations
+                    sh 'terraform validate'
+                    // Plan the changes and save the plan file
+                    sh 'terraform plan -input=false -out=tfplan'
+                }
+            }
+        }
+        
+        stage('Deployment') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                script {
+                    // Perform deployment actions, e.g., apply Terraform changes
+                    sh 'terraform apply -input=false -auto-approve'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up or perform other actions after the deployment
+            script {
+                // Clean up temporary files or perform other post-deployment actions
+            }
+        }
+    }
+}
