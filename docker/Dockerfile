@@ -5,7 +5,7 @@ RUN apk add --no-cache curl
 
 # Set up the working directory and add Terraform configuration files
 WORKDIR /app
-COPY main.tf variables.tf frontendapp.tfvars backendapp.tfvars /app/
+COPY main.tf variables.tf dev.tfvars prod.tfvars /app/
 
 # Add the EC2 module to the Docker image
 COPY modules /app/modules
