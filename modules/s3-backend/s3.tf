@@ -4,7 +4,12 @@ data "aws_s3_bucket" "ztp-deployer-bucket" {
 
 resource "aws_s3_bucket" "backend" {
   bucket = data.aws_s3_bucket.ztp-deployer-bucket.bucket # Use the existing bucket if it exists
-  tags = var.tags
+  #tags = var.tags
+
+    # Prevent accidental deletion of this S3 bucket
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "secure-backend" {
@@ -32,8 +37,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backend_encryptio
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
-      kms_master_key_id = "arn"
+      sse_algorithm = "AES256"
     }
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access" {
+  bucket                  = aws_s3_bucket.backend.bucket
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }

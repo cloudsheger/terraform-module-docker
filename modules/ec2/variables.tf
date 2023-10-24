@@ -17,6 +17,10 @@ variable "subnet_id" {
   description = "ID of the subnet where the EC2 instance will be launched"
   type        = string
 }
+variable "security_groups" {
+  description = "ID of the subnet where the EC2 instance will be launched"
+  type        = list(string)
+}
 
 variable "instance_name" {
   description = "Name tag for the EC2 instance"
@@ -33,6 +37,10 @@ variable infra_role {
   description = "infrastructure purpose"
 }
 
+variable "instance_count" {
+  description = "Number of EC2 instances to create"
+  default     = 1
+}
 variable "tags" {
   description = "A map of tags for the AWS resources."
   type        = map(string)

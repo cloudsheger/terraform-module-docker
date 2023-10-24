@@ -5,3 +5,5 @@
   variable "instance_name" {}
   variable "infra_env"{}
   variable "infra_role" {}
+  variable "security_groups" {}
+  variable "instance_count" {}

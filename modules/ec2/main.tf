@@ -3,10 +3,12 @@ provider "aws" {
 }
 
 resource "aws_instance" "example" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  subnet_id     = var.subnet_id
+  count           = var.instance_count
+  ami             = data.aws_ami.ubuntu.id
+  instance_type   = var.instance_type
+  subnet_id       = var.subnet_id
+  security_groups = var.security_groups
+  key_name        = var.key_name
   
   tags = var.tags
 }
