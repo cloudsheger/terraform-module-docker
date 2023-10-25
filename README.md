@@ -1,3 +1,84 @@
+# Terraform EC2 App Module
+
+This repository contains a Terraform module for creating EC2 instances. The module supports different environments (dev, test, and prod) using Terraform workspaces.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- [Terraform](https://www.terraform.io/downloads.html)
+
+## Getting Started
+
+1. Clone this repository to your local machine:
+
+    ```sh
+    git clone <repository_url>
+    cd terraform-ec2-app
+    ```
+
+2. Switch to the desired workspace (dev, test, or prod):
+
+    ```sh
+    terraform workspace select dev
+    ```
+
+3. Initialize Terraform:
+
+    ```sh
+    terraform init
+    ```
+
+4. Create a variable file for your environment. For example, for the dev environment, create a `dev.tfvars` file in the `environments` directory with the following content:
+
+    ```hcl
+    instance_count   = 2
+    infra_env        = "dev"
+    infra_role       = "app"
+    aws_region       = "us-west-1"
+    instance_type    = "t2.micro"
+    key_name         = "my-key"
+    subnet_id        = "subnet-123456"
+    instance_name    = "dev-instance"
+    security_groups  = ["sg-123456"]
+    ```
+
+5. Apply the Terraform configuration using the variable file:
+
+    ```sh
+    terraform apply -var-file=environments/dev.tfvars
+    ```
+
+## Workspace Management
+
+Terraform workspaces are used to manage different environments. To switch between workspaces, use the following commands:
+
+- **Switch to dev workspace**:
+
+    ```sh
+    terraform workspace select dev
+    ```
+
+- **Switch to test workspace**:
+
+    ```sh
+    terraform workspace select test
+    ```
+
+- **Switch to prod workspace**:
+
+    ```sh
+    terraform workspace select prod
+    ```
+
+## Clean Up
+
+To destroy the created resources, run:
+
+```sh
+terraform destroy -var-file=environments/dev.tfvars
+
+
 # Terraform Dockerized Workflow
 
 This guide outlines the steps to build your Docker image and execute Terraform commands (`terraform init`, `terraform plan`, and `terraform apply`) inside a container. This approach provides a consistent and isolated environment for running your Terraform operations.

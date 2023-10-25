@@ -1,12 +1,3 @@
-terraform {
-  backend "s3" {
-    bucket         = "ztp-deployer-bucket"
-    key            = "tf-state/terraform.tfstate"
-    region         = "us-east-1" # Specify the appropriate AWS region for your S3 bucket
-    encrypt        = true
-    dynamodb_table = "terraform-lock-table" # Optional: Specify a DynamoDB table for state locking
-  }
-}
 module "ec2_app" {
   source             = "./modules/ec2" # Path to your module directory
   instance_count   = var.instance_count
